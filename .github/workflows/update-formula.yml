@@ -1,0 +1,48 @@
+name: Update formula
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Check for new release
+        id: check
+        run: |
+          python scripts/update_formula.py
+          if git diff --quiet; then
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+          else
+            VERSION=$(python -c "
+          import json, urllib.request
+          print(json.loads(urllib.request.urlopen('https://pypi.org/pypi/chszlablib/json').read())['info']['version'])
+          ")
+            echo "updated=true" >> "$GITHUB_OUTPUT"
+            echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create pull request
+        if: steps.check.outputs.updated == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "Update chszlablib to ${{ steps.check.outputs.version }}"
+          title: "Update chszlablib to ${{ steps.check.outputs.version }}"
+          body: |
+            Automated update from PyPI.
+
+            New version: `${{ steps.check.outputs.version }}`
+          branch: update-${{ steps.check.outputs.version }}
+          delete-branch: true
