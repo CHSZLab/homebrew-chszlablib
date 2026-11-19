@@ -11,20 +11,28 @@ FORMULA = Path(__file__).resolve().parent.parent / "Formula" / "chszlablib.rb"
 PYPI_URL = "https://pypi.org/pypi/chszlablib/json"
 GITHUB_TARBALL = "https://github.com/CHSZLab/CHSZLabLib/archive/refs/tags/v{version}.tar.gz"
 
-# Regexes for the wheel file names (the macOS deployment target in the name can change).
+# Regexes for the wheel file names ({cp} is the formula's Python, e.g. cp314;
+# the macOS deployment target in the name can change).
 WHEEL_PATTERNS = {
-    "macos_arm": r"cp313-cp313-macosx_\d+_\d+_arm64\.whl$",
-    "linux_x64": r"cp313-cp313-manylinux_2_27_x86_64\.manylinux_2_28_x86_64\.whl$",
+    "macos_arm": r"{cp}-{cp}-macosx_\d+_\d+_arm64\.whl$",
+    "linux_x64": r"{cp}-{cp}-manylinux_2_27_x86_64\.manylinux_2_28_x86_64\.whl$",
 }
 
 
+def get_python_tag():
+    """cpXY of the formula's `depends_on "python@X.Y"` (the wheels must match it)."""
+    major, minor = re.search(r'depends_on "python@(\d+)\.(\d+)"', FORMULA.read_text()).groups()
+    return f"cp{major}{minor}"
+
+
 def get_pypi_info():
+    cp = get_python_tag()
     data = json.loads(urllib.request.urlopen(PYPI_URL).read())
     version = data["info"]["version"]
     wheels = {}
     for f in data["urls"]:
         for key, pattern in WHEEL_PATTERNS.items():
-            if re.search(pattern, f["filename"]):
+            if re.search(pattern.format(cp=cp), f["filename"]):
                 wheels[key] = {"url": f["url"], "sha256": f["digests"]["sha256"]}
     return version, wheels
 

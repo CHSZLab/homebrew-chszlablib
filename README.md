@@ -6,6 +6,7 @@
 
 ```bash
 brew tap CHSZLab/chszlablib
+brew trust chszlab/chszlablib   # Homebrew 7+ only loads formulae from trusted taps
 brew install chszlablib
 ```
 

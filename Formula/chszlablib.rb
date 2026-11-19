@@ -6,15 +6,15 @@ class Chszlablib < Formula
   license "MIT"
 
   depends_on "numpy"
-  depends_on "python@3.13"
+  depends_on "python@3.14"
 
   on_macos do
     depends_on macos: :sequoia # the macOS wheels target macOS 15.0
 
     on_arm do
       resource "chszlablib-whl" do
-        url "https://files.pythonhosted.org/packages/ef/c7/61d33f2d1c26a944bf63947fa8319c5f8da5d8fab36c05999dcccfaba3be/chszlablib-0.6.1-cp313-cp313-macosx_15_0_arm64.whl", using: :nounzip
-        sha256 "ba4699a94bab7d5d3dead2fa7475d771d452a4fe55158905dad23a100438ea18"
+        url "https://files.pythonhosted.org/packages/a1/72/da7ae78f1c3c8f245c3a97f5738306379c2d7c807e7c9a0632b60ccfd54b/chszlablib-0.6.1-cp314-cp314-macosx_15_0_arm64.whl", using: :nounzip
+        sha256 "4693fb05035a7336a3ee4aadcf70dc83b7280675512f98ffc57da1bfccef9eae"
       end
     end
   end
@@ -22,14 +22,14 @@ class Chszlablib < Formula
   on_linux do
     on_intel do
       resource "chszlablib-whl" do
-        url "https://files.pythonhosted.org/packages/4c/d3/9e1f61c03136d6ea782ab946e95641bf0f92da99fda38d78f6c1a7c2530a/chszlablib-0.6.1-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", using: :nounzip
-        sha256 "c4b2b0d61d785756bf7671813997f4e42e7a9a502dcd35ac8602846ffa1d5952"
+        url "https://files.pythonhosted.org/packages/fd/68/171aaffc4e7c94a9057c671c12896bc395e6f8d3c7bd3953f4024601253f/chszlablib-0.6.1-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", using: :nounzip
+        sha256 "9b46fe9e4a7bc93fad5d731d086af3ed846c2c936965e6beccf13b63dc20ea2a"
       end
     end
   end
 
   def python3
-    which("python3.13")
+    which("python3.14")
   end
 
   def install
