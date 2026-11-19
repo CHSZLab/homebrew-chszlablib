@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Update the Homebrew formula to the latest PyPI release of chszlablib."""
+import hashlib
 import json
 import re
-import subprocess
 import sys
 import urllib.request
 from pathlib import Path
@@ -11,9 +11,10 @@ FORMULA = Path(__file__).resolve().parent.parent / "Formula" / "chszlablib.rb"
 PYPI_URL = "https://pypi.org/pypi/chszlablib/json"
 GITHUB_TARBALL = "https://github.com/CHSZLab/CHSZLabLib/archive/refs/tags/v{version}.tar.gz"
 
+# Regexes for the wheel file names (the macOS deployment target in the name can change).
 WHEEL_PATTERNS = {
-    "macos_arm": "cp313-cp313-macosx_14_0_arm64.whl",
-    "linux_x64": "cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+    "macos_arm": r"cp313-cp313-macosx_\d+_\d+_arm64\.whl$",
+    "linux_x64": r"cp313-cp313-manylinux_2_27_x86_64\.manylinux_2_28_x86_64\.whl$",
 }
 
 
@@ -23,24 +24,15 @@ def get_pypi_info():
     wheels = {}
     for f in data["urls"]:
         for key, pattern in WHEEL_PATTERNS.items():
-            if f["filename"].endswith(pattern):
+            if re.search(pattern, f["filename"]):
                 wheels[key] = {"url": f["url"], "sha256": f["digests"]["sha256"]}
     return version, wheels
 
 
 def get_github_sha(version):
     url = GITHUB_TARBALL.format(version=version)
-    result = subprocess.run(
-        ["curl", "-sL", url],
-        capture_output=True,
-    )
-    sha = subprocess.run(
-        ["sha256sum"],
-        input=result.stdout,
-        capture_output=True,
-        text=True,
-    )
-    return sha.stdout.split()[0]
+    data = urllib.request.urlopen(url).read()
+    return hashlib.sha256(data).hexdigest()
 
 
 def get_current_version():
@@ -68,12 +60,12 @@ def update_formula(version, github_sha, wheels):
     if "macos_arm" in wheels:
         w = wheels["macos_arm"]
         text = re.sub(
-            r'(resource "chszlablib-whl" do\n\s+url ")https://[^"]+macosx_14_0_arm64\.whl(")',
+            r'(resource "chszlablib-whl" do\n\s+url ")https://[^"]+macosx_\d+_\d+_arm64\.whl(")',
             rf'\g<1>{w["url"]}\g<2>',
             text,
         )
         text = re.sub(
-            r'(url "[^"]+macosx_14_0_arm64\.whl"[^\n]*\n\s+sha256 ")[a-f0-9]+(")',
+            r'(url "[^"]+macosx_\d+_\d+_arm64\.whl"[^\n]*\n\s+sha256 ")[a-f0-9]+(")',
             rf'\g<1>{w["sha256"]}\g<2>',
             text,
         )

@@ -11,5 +11,5 @@ brew install chszlablib
 
 ## Supported platforms
 
-- macOS ARM64 (Apple Silicon)
+- macOS 15 or newer, ARM64 (Apple Silicon)
 - Linux x86_64

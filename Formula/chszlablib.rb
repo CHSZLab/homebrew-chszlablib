@@ -1,18 +1,20 @@
 class Chszlablib < Formula
   desc "Python library for large-scale graph algorithms"
   homepage "https://github.com/CHSZLab/CHSZLabLib"
-  url "https://github.com/CHSZLab/CHSZLabLib/archive/refs/tags/v0.5.27.tar.gz"
-  sha256 "e7770579d0535d19463bc34f6d526b0abf19e84dca276305116cd2911e5b3634"
+  url "https://github.com/CHSZLab/CHSZLabLib/archive/refs/tags/v0.6.1.tar.gz"
+  sha256 "29a432c382d4a51c238b60c26add075e02b242367821ed1c53d2920eb80bb96d"
   license "MIT"
 
   depends_on "numpy"
   depends_on "python@3.13"
 
   on_macos do
+    depends_on macos: :sequoia # the macOS wheels target macOS 15.0
+
     on_arm do
       resource "chszlablib-whl" do
-        url "https://files.pythonhosted.org/packages/9d/00/7a986cccfdb0599d20b0979dd922cbacbd1037c3fe1c4c5b4b58f424bb8a/chszlablib-0.5.27-cp313-cp313-macosx_14_0_arm64.whl", using: :nounzip
-        sha256 "670ab5f0e4eb03251e38f36d89036725d5e8c0b19b31551c78171ec532d030b1"
+        url "https://files.pythonhosted.org/packages/ef/c7/61d33f2d1c26a944bf63947fa8319c5f8da5d8fab36c05999dcccfaba3be/chszlablib-0.6.1-cp313-cp313-macosx_15_0_arm64.whl", using: :nounzip
+        sha256 "ba4699a94bab7d5d3dead2fa7475d771d452a4fe55158905dad23a100438ea18"
       end
     end
   end
@@ -20,8 +22,8 @@ class Chszlablib < Formula
   on_linux do
     on_intel do
       resource "chszlablib-whl" do
-        url "https://files.pythonhosted.org/packages/0f/76/648ff6fed530e06c40da2304aa784e717970668c40633a55fa6e4d51de3f/chszlablib-0.5.27-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", using: :nounzip
-        sha256 "a58dca7eb9cc5f467db8f8cee48a1f8baa73f3e9f91892b4d08b2383bff61ef3"
+        url "https://files.pythonhosted.org/packages/4c/d3/9e1f61c03136d6ea782ab946e95641bf0f92da99fda38d78f6c1a7c2530a/chszlablib-0.6.1-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", using: :nounzip
+        sha256 "c4b2b0d61d785756bf7671813997f4e42e7a9a502dcd35ac8602846ffa1d5952"
       end
     end
   end
